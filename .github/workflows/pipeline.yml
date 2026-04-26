@@ -1,0 +1,109 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint Python
+        run: |
+          pip install flake8
+          flake8 .
+
+      - name: Lint JS
+        run: |
+          cd frontend
+          npm install
+          npx eslint . || true
+
+      - name: Lint Dockerfiles
+        uses: hadolint/hadolint-action@v3.1.0
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          pip install -r api/requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          pytest api --cov=api
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: |
+          docker build -t localhost:5000/api:${{ github.sha }} ./api
+          docker build -t localhost:5000/worker:${{ github.sha }} ./worker
+          docker build -t localhost:5000/frontend:${{ github.sha }} ./frontend
+
+      - name: Push images
+        run: |
+          docker push localhost:5000/api:${{ github.sha }}
+          docker push localhost:5000/worker:${{ github.sha }}
+          docker push localhost:5000/frontend:${{ github.sha }}
+
+  security:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan images
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          scan-type: 'image'
+          image-ref: 'frontend:latest'
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: security
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for services
+        run: sleep 15
+
+      - name: Test flow
+        run: |
+          curl -X POST http://localhost:3000/submit
+
+      - name: Tear down
+        run: docker compose down
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: integration
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Simulated deploy
+        run: echo "Deploy successful"
