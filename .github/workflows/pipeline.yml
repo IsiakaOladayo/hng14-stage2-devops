@@ -73,24 +73,33 @@ jobs:
   security:
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Scan frontend images
+      - name: Rebuild API image
+        run: docker build -t api:${{ github.sha }} ./api
+
+      - name: Rebuild Worker image
+        run: docker build -t worker:${{ github.sha }} ./worker
+
+      - name: Rebuild Frontend image
+        run: docker build -t frontend:${{ github.sha }} ./frontend
+
+      - name: Scan API image
         uses: aquasecurity/trivy-action@v0.20.0
         with:
-          scan-type: 'image'
-          image-ref: localhost:5000/frontend:${{ github.sha }}
-      - name: Scan api images
+          image-ref: api:${{ github.sha }}
+
+      - name: Scan Worker image
         uses: aquasecurity/trivy-action@v0.20.0
         with:
-          scan-type: 'image'
-          image-ref: localhost:5000/api:${{ github.sha }}
-      - name: Scan worker images
+          image-ref: worker:${{ github.sha }}
+
+      - name: Scan Frontend image
         uses: aquasecurity/trivy-action@v0.20.0
         with:
-          scan-type: 'image'
-          image-ref: localhost:5000/worker:${{ github.sha }}
+          image-ref: frontend:${{ github.sha }}
 
   integration:
     runs-on: ubuntu-latest
