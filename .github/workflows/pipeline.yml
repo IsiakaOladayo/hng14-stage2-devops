@@ -76,12 +76,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Scan images
+      - name: Scan frontend images
         uses: aquasecurity/trivy-action@v0.20.0
         with:
           scan-type: 'image'
           image-ref: localhost:5000/frontend:${{ github.sha }}
+      - name: Scan api images
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          scan-type: 'image'
           image-ref: localhost:5000/api:${{ github.sha }}
+      - name: Scan worker images
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          scan-type: 'image'
           image-ref: localhost:5000/worker:${{ github.sha }}
 
   integration:
