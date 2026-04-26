@@ -80,7 +80,9 @@ jobs:
         uses: aquasecurity/trivy-action@v0.20.0
         with:
           scan-type: 'image'
-          image-ref: 'frontend:latest'
+          image-ref: localhost:5000/frontend:${{ github.sha }}
+          image-ref: localhost:5000/api:${{ github.sha }}
+          image-ref: localhost:5000/worker:${{ github.sha }}
 
   integration:
     runs-on: ubuntu-latest
