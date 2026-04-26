@@ -48,6 +48,14 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
-
+- name: Lint Python
+  run: |
+    pip install flake8
+    flake8 . || true
+- name: Lint JS
+  run: |
+    cd frontend
+    npm install
+    npx eslint . || true
 networks:
   appnet:
