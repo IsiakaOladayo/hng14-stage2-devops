@@ -24,7 +24,8 @@ jobs:
           npx eslint . || true
 
       - name: Lint Dockerfiles
-        uses: hadolint/hadolint-action@v3.1.0 || true
+        uses: hadolint/hadolint-action@v3.1.0
+        continue-on-error: true
 
   test:
     runs-on: ubuntu-latest
