@@ -6,8 +6,8 @@ services:
     networks:
       - appnet
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
       retries: 5
     restart: always
 
