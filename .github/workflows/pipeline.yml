@@ -132,18 +132,22 @@ jobs:
           exit-code: 1
           format: sarif
           output: trivy-frontend.sarif
+
       - name: Upload API SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-api.sarif
-     - name: Upload WORKER SARIF
+
+      - name: Upload WORKER SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-worker.sarif
-     - name: Upload FRONTEND SARIF
+
+      - name: Upload FRONTEND SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-frontend.sarif
+
       - name: Upload Trivy artifacts
         uses: actions/upload-artifact@v4
         with:
