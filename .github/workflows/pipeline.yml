@@ -75,14 +75,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Start local registry
+        run: |
+          docker run -d -p 5000:5000 --name registry registry:2
       - name: Build API image
-        run: docker build -t api:${{ github.sha }} -t api:latest ./api
+        run: docker build -t localhost:5000/api:${{ github.sha }} -t localhost:5000/api:latest ./api
 
       - name: Build Worker image
-        run: docker build -t worker:${{ github.sha }} -t worker:latest ./worker
+        run: docker build -t localhost:5000/api:${{ github.sha }} -t localhost:5000/api:latest ./worker
 
       - name: Build Frontend image
-        run: docker build -t frontend:${{ github.sha }} -t frontend:latest ./frontend
+        run: docker build -t localhost:5000/api:${{ github.sha }} -t localhost:5000/api:latest ./frontend
 
       - name: Push images
         run: |
