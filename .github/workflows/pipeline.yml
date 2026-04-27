@@ -192,18 +192,20 @@ jobs:
 
       - name: Test full job flow
         run: |
-          JOB_ID=$(curl -s -X POST http://localhost:3000/submit | jq -r '.job_id')   # ✅ FIX
+          JOB_ID=$(curl -s -X POST http://localhost:3000/submit | jq -r '.id')
 
-          for i in {1..10}; do
-            STATUS=$(curl -s http://localhost:3000/status/$JOB_ID | jq -r '.status')   # ✅ FIX
-            if [ "$STATUS" = "completed" ]; then
-              exit 0
-            fi
-            sleep 2
-          done
+for i in {1..10}; do
+  STATUS=$(curl -s http://localhost:3000/jobs/$JOB_ID | jq -r '.status')
 
-          echo "Job did not complete"
-          exit 1
+  if [ "$STATUS" = "completed" ]; then
+    exit 0
+  fi
+
+  sleep 2
+done
+
+echo "Job did not complete"
+exit 1
 
       - name: Tear down
         if: always()
