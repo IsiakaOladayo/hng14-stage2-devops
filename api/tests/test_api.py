@@ -19,7 +19,7 @@ def test_get_job_not_found(mock_redis):
     mock_redis.hget.return_value = None
 
     res = client.get("/jobs/123")
-    assert res.status_code == 200
+    assert res.status_code == 404
 
 
 def test_health():
