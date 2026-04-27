@@ -149,16 +149,19 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-api.sarif
+          category: api-scan
 
       - name: Upload WORKER SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-worker.sarif
+          category: worker-scan
 
       - name: Upload FRONTEND SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-frontend.sarif
+          category: frontend-scan
 
       - name: Upload Trivy artifacts
         uses: actions/upload-artifact@v4
