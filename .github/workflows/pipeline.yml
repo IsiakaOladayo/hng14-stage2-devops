@@ -125,7 +125,7 @@ jobs:
           format: sarif
           output: trivy-api.sarif
         env:
-    DOCKER_HOST: unix:///var/run/docker.sock
+          DOCKER_HOST: unix:///var/run/docker.sock
 
     - name: Scan Worker image
       uses: aquasecurity/trivy-action@v0.20.0
