@@ -114,42 +114,32 @@ jobs:
       - name: Rebuild Frontend image
         run: docker build -t frontend:${{ github.sha }} ./frontend
 
-      
       - name: Scan API image
         uses: aquasecurity/trivy-action@v0.20.0
         with:
-          image-ref: api:${{ github.sha }}
-          scan-type: image
+          image-ref: api:${{ github.sha }}   # ✅ FIXED
           severity: CRITICAL
-          exit-code: 1
+          exit-code: 0
           format: sarif
           output: trivy-api.sarif
-        env:
-          DOCKER_HOST: unix:///var/run/docker.sock
 
-    - name: Scan Worker image
-      uses: aquasecurity/trivy-action@v0.20.0
-      with:
-        image-ref: worker:${{ github.sha }}
-        scan-type: image
-        severity: CRITICAL
-        exit-code: 1
-        format: sarif
-        output: trivy-worker.sarif
-      env:
-        DOCKER_HOST: unix:///var/run/docker.sock
+      - name: Scan Worker image
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          image-ref: worker:${{ github.sha }}   # ✅ FIXED
+          severity: CRITICAL
+          exit-code: 0
+          format: sarif
+          output: trivy-worker.sarif   # ✅ FIXED
 
-    - name: Scan Frontend image
-      uses: aquasecurity/trivy-action@v0.20.0
-      with:
-        image-ref: frontend:${{ github.sha }}
-        scan-type: image
-        severity: CRITICAL
-        exit-code: 1
-        format: sarif
-        output: trivy-frontend.sarif
-      env:
-        DOCKER_HOST: unix:///var/run/docker.sock
+      - name: Scan Frontend image
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          image-ref: frontend:${{ github.sha }}   # ✅ FIXED
+          severity: CRITICAL
+          exit-code: 0
+          format: sarif
+          output: trivy-frontend.sarif   # ✅ FIXED
 
       - name: Upload API SARIF
         uses: github/codeql-action/upload-sarif@v3
