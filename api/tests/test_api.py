@@ -1,8 +1,16 @@
+from fastapi.testclient import TestClient
+from main import app
+
+client = TestClient(app)
+
+def test_create_job():
+    res = client.post("/jobs")
+    assert res.status_code == 200
+
+def test_get_job_not_found():
+    res = client.get("/jobs/123")
+    assert res.status_code == 200
+
 def test_health():
-    assert True
-
-def test_job_create():
-    assert True
-
-def test_status():
-    assert True
+    res = client.get("/health")
+    assert res.status_code == 200

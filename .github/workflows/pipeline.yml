@@ -43,9 +43,15 @@ jobs:
           pip install -r api/requirements.txt
           pip install pytest pytest-cov
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
-          pytest api --cov=api
+          pytest --cov=.
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: .coverage
 
   build:
     runs-on: ubuntu-latest
@@ -58,11 +64,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build images
-        run: |
-          docker build -t localhost:5000/api:${{ github.sha }} ./api
-          docker build -t localhost:5000/worker:${{ github.sha }} ./worker
-          docker build -t localhost:5000/frontend:${{ github.sha }} ./frontend
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build API image
+        run: docker build -t api:${{ github.sha }} -t api:latest ./api
+
+      - name: Build Worker image
+        run: docker build -t worker:${{ github.sha }} -t worker:latest ./worker
+
+      - name: Build Frontend image
+        run: docker build -t frontend:${{ github.sha }} -t frontend:latest ./frontend
 
       - name: Push images
         run: |
@@ -90,16 +110,32 @@ jobs:
         uses: aquasecurity/trivy-action@v0.20.0
         with:
           image-ref: api:${{ github.sha }}
+          severity: CRITICAL
+          exit-code: 1
+          format: sarif
+          output: trivy-api.sarif
 
       - name: Scan Worker image
         uses: aquasecurity/trivy-action@v0.20.0
         with:
           image-ref: worker:${{ github.sha }}
+          severity: CRITICAL
+          exit-code: 1
+          format: sarif
+          output: trivy-api.sarif
 
       - name: Scan Frontend image
         uses: aquasecurity/trivy-action@v0.20.0
         with:
           image-ref: frontend:${{ github.sha }}
+          severity: CRITICAL
+          exit-code: 1
+          format: sarif
+          output: trivy-api.sarif
+      - name: Upload API SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-api.sarif
 
   integration:
     runs-on: ubuntu-latest
@@ -118,6 +154,7 @@ jobs:
           curl -X POST http://localhost:3000/submit
 
       - name: Tear down
+        if: always()
         run: docker compose down
 
   deploy:
@@ -127,3 +164,7 @@ jobs:
     steps:
       - name: Simulated deploy
         run: echo "Deploy successful"
+      - name: Deploy with rolling update
+        run: |
+          docker compose up -d --no-deps --build api
+          sleep 10

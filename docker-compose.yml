@@ -9,28 +9,55 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 5
+    restart: always
+
+    deploy:
+      resources:
+        limits:
+        cpus: "0.5"
+        memory: 256M
+
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - QUEUE_NAME=${QUEUE_NAME}
 
   api:
     build: ./api
     environment:
-      - REDIS_HOST=redis
-      - QUEUE_NAME=job
+      - REDIS_HOST=${REDIS_HOST}
+      - QUEUE_NAME=${QUEUE_NAME}
+
     depends_on:
       redis:
         condition: service_healthy
     networks:
       - appnet
+    restart: always
+
+    deploy:
+      resources:
+        limits:
+        cpus: "0.5"
+        memory: 256M
 
   worker:
     build: ./worker
     environment:
-      - REDIS_HOST=redis
-      - QUEUE_NAME=job
+      - REDIS_HOST=${REDIS_HOST}
+      - QUEUE_NAME=${QUEUE_NAME}
+
     depends_on:
       redis:
         condition: service_healthy
     networks:
       - appnet
+    restart: always
+
+    deploy:
+      resources:
+        limits:
+        cpus: "0.5"
+        memory: 256M
 
   frontend:
     build: ./frontend
@@ -38,11 +65,14 @@ services:
       - "3000:3000"
     environment:
       - API_URL=http://api:8000
+      - REDIS_HOST=${REDIS_HOST}
+      - QUEUE_NAME=${QUEUE_NAME}
     depends_on:
       api:
         condition: service_healthy
     networks:
       - appnet
+    restart: always
     deploy:
       resources:
         limits:
