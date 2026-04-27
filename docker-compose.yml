@@ -14,8 +14,8 @@ services:
     deploy:
       resources:
         limits:
-        cpus: "0.5"
-        memory: 256M
+          cpus: "0.5"
+          memory: "256M"
 
     environment:
       - REDIS_HOST=${REDIS_HOST}
@@ -37,8 +37,8 @@ services:
     deploy:
       resources:
         limits:
-        cpus: "0.5"
-        memory: 256M
+          cpus: "0.5"
+          memory: "256M"
 
   worker:
     build: ./worker
@@ -56,8 +56,8 @@ services:
     deploy:
       resources:
         limits:
-        cpus: "0.5"
-        memory: 256M
+          cpus: "0.5"
+          memory: "256M"
 
   frontend:
     build: ./frontend
@@ -77,6 +77,6 @@ services:
       resources:
         limits:
           cpus: "0.5"
-          memory: 256M
+          memory: "256M"
 networks:
   appnet:
