@@ -194,18 +194,18 @@ jobs:
         run: |
           JOB_ID=$(curl -s -X POST http://localhost:3000/submit | jq -r '.id')
 
-for i in {1..10}; do
-  STATUS=$(curl -s http://localhost:3000/jobs/$JOB_ID | jq -r '.status')
+          for i in {1..10}; do
+            STATUS=$(curl -s http://localhost:3000/jobs/$JOB_ID | jq -r '.status')
 
-  if [ "$STATUS" = "completed" ]; then
-    exit 0
-  fi
+            if [ "$STATUS" = "completed" ]; then
+              exit 0
+            fi
 
-  sleep 2
-done
+            sleep 2
+          done
 
-echo "Job did not complete"
-exit 1
+          echo "Job did not complete"
+          exit 1
 
       - name: Tear down
         if: always()
