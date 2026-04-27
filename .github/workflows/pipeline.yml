@@ -79,10 +79,10 @@ jobs:
         run: docker build -t localhost:5000/api:${{ github.sha }} -t localhost:5000/api:latest ./api
 
       - name: Build Worker image
-        run: docker build -t localhost:5000/api:${{ github.sha }} -t localhost:5000/api:latest ./worker
+        run: docker build -t localhost:5000/worker:${{ github.sha }} -t localhost:5000/api:latest ./worker
 
       - name: Build Frontend image
-        run: docker build -t localhost:5000/api:${{ github.sha }} -t localhost:5000/api:latest ./frontend
+        run: docker build -t localhost:5000/frontend:${{ github.sha }} -t localhost:5000/api:latest ./frontend
 
       - name: Push images
         run: |
