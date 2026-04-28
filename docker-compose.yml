@@ -58,13 +58,14 @@ services:
     environment:
       - REDIS_HOST=redis
       - QUEUE_NAME=job
-
+     env_file:
+      - .env
     depends_on:
       redis:
         condition: service_healthy
     networks:
       - appnet
-    restart: always
+    restart: unless-stopped
 
     deploy:
       resources:
@@ -80,12 +81,14 @@ services:
       - API_URL=http://api:8000
       - REDIS_HOST=redis
       - QUEUE_NAME=job
+     env_file:
+      - .env
     depends_on:
       api:
         condition: service_healthy
     networks:
       - appnet
-    restart: always
+    restart: unless-stopped
     deploy:
       resources:
         limits:
