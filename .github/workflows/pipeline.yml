@@ -192,10 +192,14 @@ jobs:
 
       - name: Test full job flow
         run: |
-          JOB_ID=$(curl -s -X POST http://localhost:3000/submit | jq -r '.id')
+          RESPONSE=$(curl -s -X POST http://localhost:3000/submit)
+
+          echo "Response: $RESPONSE"
+
+          JOB_ID=$(echo "$RESPONSE" | jq -r '.id')
 
           for i in {1..10}; do
-            STATUS=$(curl -s http://localhost:3000/jobs/$JOB_ID | jq -r '.status')
+            STATUS=$RESPONSE/$JOB_ID | jq -r '.status')
 
             if [ "$STATUS" = "completed" ]; then
               exit 0
