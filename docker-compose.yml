@@ -23,6 +23,10 @@ services:
 
   api:
     build: ./api
+
+    ports:
+    - "8000:8000"   # ✅ THIS IS REQUIRED
+
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - QUEUE_NAME=${QUEUE_NAME}
