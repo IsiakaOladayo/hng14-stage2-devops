@@ -4,12 +4,14 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN npm run build
 
 # Stage 2
 FROM node:18-alpine
 WORKDIR /app
 
-RUN adduser -D appuser
+RUN addgroup -S app && adduser -S app -G app
+USER app
 
 COPY --from=builder /app .
 
