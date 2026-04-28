@@ -15,6 +15,14 @@ QUEUE_NAME = os.getenv("QUEUE_NAME", "job")
 
 r = redis.Redis(host=REDIS_HOST, port=6379, decode_responses=True)
 
+
+# -------------------------
+# CREATE JOB (for tests)
+# -------------------------
+@app.post("/jobs")
+def create_job_compat():
+    return create_job()
+
 # -------------------------
 # CREATE JOB
 # -------------------------
