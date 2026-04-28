@@ -248,12 +248,20 @@ jobs:
     needs: integration
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Simulated deploy
-        run: echo "Deploy successful"
+      - uses: actions/checkout@v4
 
-      - name: Deploy with rolling update
+      - name: Debug workspace
         run: |
-          cd $GITHUB_WORKSPACE
+          pwd
           ls -la
-          docker compose -f docker-compose.yml up -d --no-deps --build api
-          sleep 10
+
+      - name: Set env
+        run: |
+          echo "REDIS_HOST=redis" >> $GITHUB_ENV
+          echo "QUEUE_NAME=job" >> $GITHUB_ENV
+
+      - name: Start services
+        run: docker compose -f docker-compose.yml up -d
+
+      - name: Wait for services
+        run: sleep 15
