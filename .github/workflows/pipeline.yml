@@ -192,6 +192,9 @@ jobs:
 
       - name: Test full job flow
         run: |
+          echo "Waiting for Redis..."
+          sleep 10
+
           set -e
 
           echo "Submitting job..."
