@@ -10,8 +10,8 @@ FROM python:3.11-slim
 WORKDIR /app
 RUN apt-get update && apt-get install -y curl
 
-# create user properly
-RUN useradd -ms /bin/bash appuser
+# Create non-root user
+RUN addgroup --system app && adduser --system --group app
 
 COPY --from=builder /root/.local /home/appuser/.local
 COPY . .
