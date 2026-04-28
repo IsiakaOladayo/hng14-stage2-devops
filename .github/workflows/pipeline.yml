@@ -210,31 +210,31 @@ jobs:
           # ✅ Extract job ID safely
           JOB_ID=$(echo "$RESPONSE" | jq -r '.id // .job_id')
 
-         if [ -z "$JOB_ID" ] || [ "$JOB_ID" = "null" ]; then
-           echo "❌ ERROR: No job ID returned from API"
-           exit 1
-         fi
+          if [ -z "$JOB_ID" ] || [ "$JOB_ID" = "null" ]; then
+            echo "❌ ERROR: No job ID returned from API"
+            exit 1
+          fi
 
-         echo "Job ID: $JOB_ID"
+          echo "Job ID: $JOB_ID"
 
-         echo "Polling job status..."
+          echo "Polling job status..."
 
-         # ✅ Poll job status with retries
-         for i in {1..20}; do
-           STATUS=$(curl -s http://localhost:3000/jobs/$JOB_ID | jq -r '.status // empty')
+          # ✅ Poll job status with retries
+          for i in {1..20}; do
+            STATUS=$(curl -s http://localhost:3000/jobs/$JOB_ID | jq -r '.status // empty')
 
-           echo "Attempt $i - Status: $STATUS"
+            echo "Attempt $i - Status: $STATUS"
 
-           if [ "$STATUS" = "completed" ]; then
-             echo "✅ Job completed successfully"
-             exit 0
-           fi
+            if [ "$STATUS" = "completed" ]; then
+              echo "✅ Job completed successfully"
+              exit 0
+            fi
 
-           sleep 2
-         done
+            sleep 2
+          done
 
-         echo "❌ Job did not complete in time"
-         exit 1
+          echo "❌ Job did not complete in time"
+          exit 1
 
       - name: Tear down
         if: always()
