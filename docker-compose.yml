@@ -30,7 +30,8 @@ services:
     environment:
       - REDIS_HOST=redis
       - QUEUE_NAME=job
-
+    env_file:
+      - .env
     depends_on:
       redis:
         condition: service_healthy
@@ -44,7 +45,7 @@ services:
       retries: 10
       start_period: 5s
 
-    restart: always
+    restart: unless-stopped
 
     deploy:
       resources:
