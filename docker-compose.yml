@@ -18,8 +18,8 @@ services:
           memory: "256M"
 
     environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - QUEUE_NAME=${QUEUE_NAME}
+      - REDIS_HOST=redis
+      - QUEUE_NAME=job
 
   api:
     build: ./api
@@ -28,8 +28,8 @@ services:
     - "8000:8000"   # ✅ THIS IS REQUIRED
 
     environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - QUEUE_NAME=${QUEUE_NAME}
+      - REDIS_HOST=redis
+      - QUEUE_NAME=job
 
     depends_on:
       redis:
@@ -55,8 +55,8 @@ services:
   worker:
     build: ./worker
     environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - QUEUE_NAME=${QUEUE_NAME}
+      - REDIS_HOST=redis
+      - QUEUE_NAME=job
 
     depends_on:
       redis:
@@ -77,8 +77,8 @@ services:
       - "3000:3000"
     environment:
       - API_URL=http://api:8000
-      - REDIS_HOST=${REDIS_HOST}
-      - QUEUE_NAME=${QUEUE_NAME}
+      - REDIS_HOST=redis
+      - QUEUE_NAME=job
     depends_on:
       api:
         condition: service_healthy
