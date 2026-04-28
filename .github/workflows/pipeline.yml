@@ -254,5 +254,6 @@ jobs:
       - name: Deploy with rolling update
         run: |
           cd $GITHUB_WORKSPACE
+          ls -la
           docker compose -f docker-compose.yml up -d --no-deps --build api
           sleep 10
